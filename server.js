@@ -23,13 +23,13 @@ app.get("/", (req, res) => {
 })
 
 // image storage engine
-/* const storage = multer.diskStorage({
+const storage = multer.diskStorage({
     destination: "./upload/images",
     filename: (req, file, cb) => {
         return cb(null, `${file.fieldname}_${Date.now()}${path.extname(file.originalname)}`)
     }
 });
-const upload = multer ({ storage:storage }); */
+const upload = multer ({ storage:storage });
 
 // create middelware to fetch user auth
 const fetchUser = async (req, res, next) => {
@@ -51,7 +51,7 @@ const fetchUser = async (req, res, next) => {
 };
 
 // upload endpoiut for images
-/* app.use("/images", express.static("upload/images"));
+app.use("/images", express.static("upload/images"));
 
 app.post("/upload", upload.array("product", 10), (req, res) => {
     if (!req.files || req.files.length === 0) {
@@ -60,7 +60,7 @@ app.post("/upload", upload.array("product", 10), (req, res) => {
 
     const imageUrls = req.files.map(file => `http://localhost:${port}/images/${file.filename}`);
     res.json({ success: 1, image_urls: imageUrls });
-}); */
+});
 
 
 const Product = mongoose.model("Product", {
