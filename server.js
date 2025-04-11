@@ -11,7 +11,8 @@ const cors = require('cors');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const fuzzy = require('fuzzy');
 const fs = require('fs');
-const uploadDir = './upload/images';
+
+const uploadDir = path.join(__dirname, 'upload', 'images');
 
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
