@@ -10,13 +10,6 @@ const path = require('path');
 const cors = require('cors');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const fuzzy = require('fuzzy');
-const fs = require('fs');
-
-const uploadDir = path.join(__dirname, 'upload', 'images');
-
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
 
 app.use(express.json());
 app.use(cors());
@@ -166,12 +159,28 @@ app.get("/searchproducts", async (req, res) => {
 
 // API for getting all products
 app.get("/allproducts", async (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 30;
+    const skip = (page - 1) * limit;
+
     try {
-        let products = await Product.find({}).sort({ name: 1 });
-        res.send(products);
+        const products = await Product.find({})
+            .sort({ name: 1 })
+            .skip(skip)
+            .limit(limit);
+        
+        const total = await Product.countDocuments();
+
+        res.json({
+            success: true,
+            products,
+            total,
+            page,
+            totalPages: Math.ceil(total / limit)
+        });
     } catch (error) {
-        console.error("Error fetching products:", error);
-        res.status(500).send({ error: "Server Error" });
+        console.error("Error fetching paginated products:", error);
+        res.status(500).json({ success: false, error: "Server Error" });
     }
 });
 
